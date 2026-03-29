@@ -4,16 +4,16 @@ REM Fesch Agent CLI Launcher
 setlocal
 set "PATH=%USERPROFILE%\.local\bin;%PATH%"
 
-if "%1"=="" goto :cli
-if "%1"=="run" goto :run
-if "%1"=="web" goto :web
-if "%1"=="cli" goto :cli
-if "%1"=="build" goto :build
-if "%1"=="clean" goto :clean
-if "%1"=="help" goto :help
+if "%~1"=="" goto :cli
+if /i "%~1"=="run" goto :run
+if /i "%~1"=="web" goto :web
+if /i "%~1"=="cli" goto :cli
+if /i "%~1"=="build" goto :build
+if /i "%~1"=="clean" goto :clean
+if /i "%~1"=="help" goto :help
 
-echo Unknown command: %1
-goto :help
+REM Default: treat as message for CLI
+goto :cli
 
 :run
 echo 🚀 Running Fesch Agent TUI...
@@ -29,12 +29,9 @@ goto :end
 
 :cli
 echo 💬 Running Fesch Agent CLI...
+echo.
 cd /d D:\agent_sup
-if "%2"=="" (
-    uv run adk run brain/
-) else (
-    uv run adk run brain/ --message "%2"
-)
+uv run adk run brain/
 goto :end
 
 :build

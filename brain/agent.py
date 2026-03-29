@@ -22,13 +22,17 @@ from brain.tools.scheduler_ipc import schedule_task
 
 load_dotenv()
 
-# Get API key for OpenRouter
+# Get API keys
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 
+# Configure litellm for OpenRouter
+os.environ["OPENROUTER_API_KEY"] = OPENROUTER_API_KEY
+
 # ── Root ADK Agent ───────────────────────────────────────────────
+# Using litellm format: openrouter/model-name
 root_agent = Agent(
     name="fesch_agent",
-    model=DEFAULT_MODEL,  # Using string model name directly
+    model=select_model_for_task("default"),  # OpenRouter via litellm
     description=(
         "Fesch - General-purpose AI agent with PC control, "
         "web browsing, scheduling, and plugin support."
