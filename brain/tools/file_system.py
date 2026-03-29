@@ -3,10 +3,8 @@
 
 import os
 from pathlib import Path
-from google.adk.tools import tool
 
 
-@tool
 def read_file(path: str) -> str:
     """
     Read the contents of a file.
@@ -24,15 +22,14 @@ def read_file(path: str) -> str:
         return f"Error reading file: {e}"
 
 
-@tool
 def write_file(path: str, content: str) -> str:
     """
     Write content to a file.
-    
+
     Args:
         path: Path to the file to write
         content: Content to write
-        
+
     Returns:
         Confirmation message
     """
@@ -45,7 +42,6 @@ def write_file(path: str, content: str) -> str:
         return f"Error writing file: {e}"
 
 
-@tool
 def list_dir(path: str = ".") -> str:
     """
     List contents of a directory.

@@ -3,10 +3,8 @@
 
 import os
 import httpx
-from google.adk.tools import tool
 
 
-@tool
 def search_web(query: str) -> str:
     """
     Search the web for current information using Perplexity sonar-pro via OpenRouter.

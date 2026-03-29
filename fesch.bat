@@ -4,7 +4,7 @@ REM Fesch Agent CLI Launcher
 setlocal
 set "PATH=%USERPROFILE%\.local\bin;%PATH%"
 
-if "%1"=="" goto :help
+if "%1"=="" goto :cli
 if "%1"=="run" goto :run
 if "%1"=="web" goto :web
 if "%1"=="cli" goto :cli
@@ -30,7 +30,11 @@ goto :end
 :cli
 echo 💬 Running Fesch Agent CLI...
 cd /d D:\agent_sup
-uv run adk run brain/ --message "%2"
+if "%2"=="" (
+    uv run adk run brain/
+) else (
+    uv run adk run brain/ --message "%2"
+)
 goto :end
 
 :build
@@ -55,12 +59,13 @@ echo.
 echo 🤖 Fesch Agent - Polyglot AI Agent System
 echo.
 echo Usage:
-echo   fesch run     - Run the TUI interface
-echo   fesch web     - Start the ADK web UI
-echo   fesch cli     - Run a CLI command
-echo   fesch build   - Build all components
-echo   fesch clean   - Clean build artifacts
-echo   fesch help    - Show this help
+echo   fesch       - Run CLI mode (default)
+echo   fesch run   - Run the TUI interface
+echo   fesch web   - Start the ADK web UI
+echo   fesch cli   - Run a CLI command
+echo   fesch build - Build all components
+echo   fesch clean - Clean build artifacts
+echo   fesch help  - Show this help
 echo.
 
 :end

@@ -3,10 +3,8 @@
 
 import asyncio
 from playwright.async_api import async_playwright
-from google.adk.tools import tool
 
 
-@tool
 async def browse(task: str) -> str:
     """
     Automate a real browser to complete a web task in natural language.

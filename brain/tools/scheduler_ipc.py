@@ -3,10 +3,8 @@
 
 import socket
 import json
-from google.adk.tools import tool
 
 
-@tool
 def schedule_task(cron: str, action: str, args: dict = None) -> str:
     """
     Schedule a recurring task.

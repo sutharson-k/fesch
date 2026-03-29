@@ -1,122 +1,67 @@
 # brain/model_router.py
-# OpenRouter model wrapper with rotation support
+# Model configuration for OpenRouter
 
-import os
-import httpx
-from google.adk.models.base_llm import BaseLlm
+# Default model - using string name directly (ADK will handle it)
+DEFAULT_MODEL = "google/gemini-2.0-flash-exp:free"
 
+# Free large context models
 FREE_LARGE_CTX = [
-    "google/gemini-2.0-flash-exp:free",  # 1M context — default
+    "google/gemini-2.0-flash-exp:free",  # 1M context
     "meta-llama/llama-3.3-70b-instruct:free",  # 128k context
     "deepseek/deepseek-r1:free",  # 164k context
 ]
 
+# Model selection by task type
+IMAGE_MODELS = [
+    "black-forest-labs/flux-1.1-pro",
+    "stabilityai/stable-diffusion-3-5-large",
+]
 
-class OpenRouterModel(BaseLlm):
-    """Drop-in ADK model that routes all LLM calls through OpenRouter."""
+VIDEO_MODELS = [
+    "runway/gen3a_turbo",
+    "minimax/video-01",
+]
 
-    def __init__(self, model: str = FREE_LARGE_CTX[0]):
-        self.model = model
-        self.api_key = os.getenv("OPENROUTER_API_KEY", "")
-        self.base = "https://openrouter.ai/api/v1"
-
-    @property
-    def model_name(self) -> str:
-        return self.model
-
-    def _call(self, messages: list, **kwargs) -> str:
-        resp = httpx.post(
-            f"{self.base}/chat/completions",
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "HTTP-Referer": "https://github.com/fesch-agent",
-                "X-Title": "Fesch Agent",
-            },
-            json={"model": self.model, "messages": messages, **kwargs},
-            timeout=120,
-        )
-        resp.raise_for_status()
-        return resp.json()["choices"][0]["message"]["content"]
-
-    def select_for_task(self, task: str) -> "OpenRouterModel":
-        """Return the right model for the detected task type."""
-        t = task.lower()
-
-        # Image generation
-        if any(
-            w in t for w in ["draw", "generate image", "picture", "flux", "image"]
-        ):
-            return OpenRouterModel("black-forest-labs/flux-1.1-pro")
-
-        # Video generation
-        if any(
-            w in t for w in ["video", "animate", "render video", "runway"]
-        ):
-            return OpenRouterModel("runway/gen3a_turbo")
-
-        # Vision/image analysis
-        if any(
-            w in t for w in ["look at", "describe image", "what's in", "analyze image"]
-        ):
-            return OpenRouterModel("google/gemini-2.0-flash-exp:free")
-
-        # Default: free large context model
-        return OpenRouterModel(FREE_LARGE_CTX[0])
+VISION_MODELS = [
+    "google/gemini-2.0-flash-exp:free",
+    "qwen/qwen2.5-vl-72b-instruct:free",
+]
 
 
-class OllamaModel(BaseLlm):
-    """Offline model support via Ollama."""
+def select_model_for_task(task: str) -> str:
+    """Select the appropriate model based on task description."""
+    t = task.lower()
 
-    def __init__(self, model: str = "llama3.2", base_url: str = "http://localhost:11434"):
-        self.model = model
-        self.base_url = base_url
+    # Image generation
+    if any(w in t for w in ["draw", "generate image", "picture", "flux", "image"]):
+        return IMAGE_MODELS[0]
 
-    @property
-    def model_name(self) -> str:
-        return f"ollama/{self.model}"
+    # Video generation
+    if any(w in t for w in ["video", "animate", "render video", "runway"]):
+        return VIDEO_MODELS[0]
 
-    def _call(self, messages: list, **kwargs) -> str:
-        resp = httpx.post(
-            f"{self.base_url}/api/chat",
-            json={
-                "model": self.model,
-                "messages": messages,
-                "stream": False,
-            },
-            timeout=120,
-        )
-        resp.raise_for_status()
-        return resp.json()["message"]["content"]
+    # Vision/image analysis
+    if any(w in t for w in ["look at", "describe image", "what's in", "analyze image"]):
+        return VISION_MODELS[0]
+
+    # Default: free large context model
+    return DEFAULT_MODEL
 
 
-class DashscopeModel(BaseLlm):
-    """Dashscope (Alibaba Cloud) model support."""
+# Ollama configuration (offline models)
+OLLAMA_BASE_URL = "http://localhost:11434"
+OLLAMA_MODELS = ["llama3.2", "llama3.1", "mistral", "qwen2.5"]
 
-    def __init__(self, model: str = "qwen-max"):
-        self.model = model
-        self.api_key = os.getenv("DASHSCOPE_API_KEY", "")
-        self.base = "https://dashscope.aliyuncs.com/api/v1"
 
-    @property
-    def model_name(self) -> str:
-        return f"dashscope/{self.model}"
+def get_ollama_model_name(model: str = "llama3.2") -> str:
+    """Get Ollama model identifier."""
+    return f"ollama/{model}"
 
-    def _call(self, messages: list, **kwargs) -> str:
-        # Convert messages to Dashscope format
-        dashscope_messages = [{"role": m["role"], "content": m["content"]} for m in messages]
 
-        resp = httpx.post(
-            f"{self.base}/services/aigc/text-generation/generation",
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": self.model,
-                "input": {"messages": dashscope_messages},
-            },
-            timeout=120,
-        )
-        resp.raise_for_status()
-        result = resp.json()
-        return result["output"]["choices"][0]["message"]["content"]
+# Dashscope configuration (Alibaba Cloud)
+DASHSCOPE_MODELS = ["qwen-max", "qwen-plus", "qwen-turbo"]
+
+
+def get_dashscope_model_name(model: str = "qwen-max") -> str:
+    """Get Dashscope model identifier."""
+    return f"dashscope/{model}"

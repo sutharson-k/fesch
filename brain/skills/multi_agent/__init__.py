@@ -2,19 +2,19 @@
 # Multi-agent neural network visualization for complex problem solving
 
 from google.adk.agents import Agent
-from brain.model_router import OpenRouterModel
+from brain.model_router import DEFAULT_MODEL
 import asyncio
 import json
 
 multi_agent_agent = Agent(
     name="multi_agent",
-    model=OpenRouterModel(),
+    model=DEFAULT_MODEL,
     description="Multi-agent debate system for complex problem solving",
     instruction="""
 You coordinate multiple AI agents debating to find the best solution.
 Each agent has a different perspective:
 - Analyst: Breaks down the problem logically
-- Critic: Identifies flaws and edge cases  
+- Critic: Identifies flaws and edge cases
 - Innovator: Proposes creative solutions
 - Validator: Tests and verifies solutions
 
@@ -32,22 +32,22 @@ class MultiAgentDebate:
         self.agents = {
             "analyst": Agent(
                 name="analyst",
-                model=OpenRouterModel(),
+                model=DEFAULT_MODEL,
                 instruction="Analyze problems logically and systematically.",
             ),
             "critic": Agent(
-                name="critic", 
-                model=OpenRouterModel(),
+                name="critic",
+                model=DEFAULT_MODEL,
                 instruction="Critique solutions, find flaws and edge cases.",
             ),
             "innovator": Agent(
                 name="innovator",
-                model=OpenRouterModel(),
+                model=DEFAULT_MODEL,
                 instruction="Propose creative and innovative solutions.",
             ),
             "validator": Agent(
                 name="validator",
-                model=OpenRouterModel(),
+                model=DEFAULT_MODEL,
                 instruction="Validate and test proposed solutions.",
             ),
         }
@@ -109,11 +109,11 @@ class MultiAgentDebate:
 async def run_debate(problem: str, rounds: int = 3) -> dict:
     """
     Run a multi-agent debate to solve a complex problem.
-    
+
     Args:
         problem: The problem to solve
         rounds: Number of debate rounds
-        
+
     Returns:
         Debate results including all statements and final solution
     """
@@ -131,7 +131,7 @@ async def run_debate(problem: str, rounds: int = 3) -> dict:
 def visualize_debate(results: dict) -> str:
     """
     Create ASCII visualization of the debate network.
-    
+
     Shows agents as nodes with connections showing argument flow.
     """
     lines = [

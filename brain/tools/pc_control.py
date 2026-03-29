@@ -3,7 +3,6 @@
 
 import ctypes
 import os
-from google.adk.tools import tool
 
 # Load the native library
 _lib_path = None
@@ -25,15 +24,14 @@ def _check_lib():
         raise RuntimeError("Native library not found. Build the C++ layer first.")
 
 
-@tool
 def move_mouse(x: int, y: int) -> str:
     """
     Move the mouse cursor to screen coordinates (x, y).
-    
+
     Args:
         x: X coordinate (pixels from left)
         y: Y coordinate (pixels from top)
-        
+
     Returns:
         Confirmation message
     """
@@ -42,11 +40,10 @@ def move_mouse(x: int, y: int) -> str:
     return f"Mouse moved to ({x}, {y})"
 
 
-@tool
 def click(button: int = 0) -> str:
     """
     Click the mouse.
-    
+
     Args:
         button: 0=left, 1=right, 2=middle
         
@@ -59,14 +56,13 @@ def click(button: int = 0) -> str:
     return f"Clicked {buttons.get(button, 'left')} button"
 
 
-@tool
 def type_text(text: str) -> str:
     """
     Type text via keyboard simulation.
-    
+
     Args:
         text: Text to type
-        
+
     Returns:
         Confirmation message
     """
@@ -75,14 +71,13 @@ def type_text(text: str) -> str:
     return f"Typed: {text}"
 
 
-@tool
 def press_key(combo: str) -> str:
     """
     Press a key combination e.g. 'ctrl+c', 'enter', 'alt+f4'.
-    
+
     Args:
         combo: Key or key combination
-        
+
     Returns:
         Confirmation message
     """
@@ -91,14 +86,13 @@ def press_key(combo: str) -> str:
     return f"Pressed: {combo}"
 
 
-@tool
 def screenshot(path: str = "/tmp/screenshot.png") -> str:
     """
     Take a full-screen screenshot and save it to path.
-    
+
     Args:
         path: Path to save the screenshot
-        
+
     Returns:
         Confirmation message
     """
@@ -107,14 +101,13 @@ def screenshot(path: str = "/tmp/screenshot.png") -> str:
     return f"Screenshot saved to {path}"
 
 
-@tool
 def launch(cmd: str) -> str:
     """
     Launch an application or shell command.
-    
+
     Args:
         cmd: Command or application to launch
-        
+
     Returns:
         Confirmation message
     """

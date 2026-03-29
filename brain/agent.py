@@ -9,13 +9,12 @@ from dotenv import load_dotenv
 from google.adk.agents import Agent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
-from google.genai import types as genai_types
 
-from brain.model_router import OpenRouterModel
+from brain.model_router import DEFAULT_MODEL, select_model_for_task
 from brain.tools.web_search import search_web
 from brain.tools.web_automation import browse
 from brain.tools.pc_control import (
-    move_mouse, click, type_text, press_key, 
+    move_mouse, click, type_text, press_key,
     screenshot, launch
 )
 from brain.tools.file_system import read_file, write_file, list_dir
@@ -23,10 +22,13 @@ from brain.tools.scheduler_ipc import schedule_task
 
 load_dotenv()
 
+# Get API key for OpenRouter
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+
 # ── Root ADK Agent ───────────────────────────────────────────────
 root_agent = Agent(
     name="fesch_agent",
-    model=OpenRouterModel(),  # OpenRouter wrapper (see §5)
+    model=DEFAULT_MODEL,  # Using string model name directly
     description=(
         "Fesch - General-purpose AI agent with PC control, "
         "web browsing, scheduling, and plugin support."
@@ -79,12 +81,13 @@ for _, name, _ in pkgutil.iter_modules(["brain/plugins"]):
 
 # ── Chat Function Called by Rust (via PyO3) ──────────────────────
 import asyncio
+from google.genai import types as genai_types
 
 
 async def chat(user_id: str, session_id: str, message: str) -> str:
     """Called by the Rust TUI engine for each user turn."""
     # Swap model based on task type before running
-    root_agent.model = root_agent.model.select_for_task(message)
+    root_agent.model = select_model_for_task(message)
 
     content = genai_types.Content(
         role="user",
