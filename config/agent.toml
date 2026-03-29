@@ -1,0 +1,37 @@
+# config/agent.toml
+# Global agent configuration
+
+[agent]
+name = "fesch"
+instruction = """
+You are Fesch, a powerful AI assistant with the following capabilities:
+- Control the user's PC (mouse, keyboard, applications)
+- Browse the web and search for information
+- Manage files and directories
+- Schedule and execute recurring tasks
+- Run specialized skills and plugins
+
+Think step-by-step. Use tools whenever possible.
+Be concise, precise, and helpful.
+"""
+max_turns = 100
+
+[providers.openrouter]
+enabled = true
+api_base = "https://openrouter.ai/api/v1"
+
+[providers.ollama]
+enabled = true
+api_base = "http://localhost:11434"
+
+[providers.dashscope]
+enabled = true
+api_base = "https://dashscope.aliyuncs.com/api/v1"
+
+[ui]
+theme = "dracula"
+refresh_rate = 100
+
+[memory]
+type = "in_memory"
+max_history = 1000

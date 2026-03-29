@@ -1,0 +1,27 @@
+# config/schedule.toml
+# Scheduled task definitions
+
+[[tasks]]
+name = "morning_briefing"
+cron = "0 8 * * *"
+action = "brain.skills.briefing.run"
+enabled = true
+
+[[tasks]]
+name = "hourly_news"
+cron = "0 * * * *"
+action = "brain.tools.web_search.search_web"
+args = { query = "AI news today" }
+enabled = true
+
+[[tasks]]
+name = "weekly_report"
+cron = "0 9 * * 1"
+action = "brain.skills.report_writer.run"
+enabled = false
+
+[[tasks]]
+name = "daily_summary"
+cron = "0 20 * * *"
+action = "brain.skills.daily_summary.run"
+enabled = true
